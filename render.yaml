@@ -1,0 +1,79 @@
+# Yakasha SAP + WAHA GOWS all-in-one Render Blueprint.
+# Assumes project files are stored at the repository root.
+services:
+  - type: web
+    name: yakasha-sap
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: WAHA_API_KEY
+        generateValue: true
+      - key: WEBHOOK_SECRET
+        generateValue: true
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: WAHA_URL
+        value: http://127.0.0.1:3000
+      - key: WHATSAPP_API_PORT
+        value: "3000"
+      - key: WHATSAPP_API_HOSTNAME
+        value: 127.0.0.1
+      - key: WHATSAPP_DEFAULT_ENGINE
+        value: GOWS
+      - key: WAHA_LOCAL_STORE_BASE_DIR
+        value: /app/.sessions
+      - key: WHATSAPP_FILES_FOLDER
+        value: /app/.media
+      - key: WHATSAPP_FILES_LIFETIME
+        value: "0"
+      - key: WAHA_PRINT_QR
+        value: "false"
+      - key: WAHA_WORKER_RESTART_SESSIONS
+        value: "true"
+      - key: WHATSAPP_RESTART_ALL_SESSIONS
+        value: "true"
+      - key: WAHA_DASHBOARD_ENABLED
+        value: "false"
+      - key: WHATSAPP_SWAGGER_ENABLED
+        value: "false"
+      - key: WAHA_READY_TIMEOUT_S
+        value: "120"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: yakasha-sap-db
+          property: connectionString
+      - key: WHATSAPP_SESSIONS_POSTGRESQL_URL
+        fromDatabase:
+          name: yakasha-sap-db
+          property: connectionString
+      - key: MAX_ACTIVE_LINKS
+        value: "1"
+      - key: PAIRING_READY_TIMEOUT_MS
+        value: "90000"
+      - key: ADMIN_TOKEN_TTL_SECONDS
+        value: "604800"
+      - key: DB_POOL_MAX
+        value: "2"
+      - key: REQUEST_BODY_LIMIT
+        value: 32kb
+      - key: MEDIA_MAX_BYTES
+        value: "8388608"
+      - key: MEDIA_REQUEST_BODY_LIMIT
+        value: 12mb
+
+databases:
+  - name: yakasha-sap-db
+    databaseName: yakasha_sap
+    user: yakasha_sap
+    plan: free
+    region: frankfurt
+    ipAllowList: []
